@@ -28,8 +28,11 @@ In line 3 put mp3 or ogg for the format you want saved
 
 Optional, create a whitelist-artists.txt file with the names of the artists you only want to hear/record. Each line must be capitalized as pianobar shows them and the last line must have a blank line under it. Example:
 
+```
 Modest Mouse
 Pink Floyd
+
+```
 
 Optional, create a blacklist-artists.txt file with the names of the artists you dont want to hear/record. Each line must be capitalized as pianobar shows them and the last line must have a blank line under it.
 
