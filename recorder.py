@@ -137,7 +137,7 @@ while(True):
                 os.remove("Music/" + playingInfo1 + "/" + playingInfo2 + "/" + playingInfo3 + "." + outputType)
                 print "Removed file - too small: Music/" + playingInfo1 + "/" + playingInfo2 + "/" + playingInfo3 + "." + outputType
         except:
-            print "Exception, avconv is not running\n"
+            print "Exception, avconv is not running - this is usually ok\n"
         try:
             #try to clean up and format pianobar's output
             cleanPianobarChars = output.split('|>  "', 1)
