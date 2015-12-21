@@ -2,34 +2,30 @@
 
 Record songs from pandora to mp3
 
-Requirements:
+**Requirements**
 
 pianobar and libav-tools
 
-Installation
+**Installation**
 
 ```sudo apt-get install pianobar libav-tools```
 
-To setup pianobar after install 
-```mkdir ~/.config/pianobar```
-```sudo nano ~/.config/pianobar/config```
-see example config file 
+To setup pianobar after installing: 
 
-you will need to add your email and password for pandora
+```mkdir ~/.config/pianobar```  
+```sudo nano ~/.config/pianobar/config``` - see example config file  
+You will need to add your email and password for pandora
 
-```sudo nano  /etc/pulse/daemon.conf```
+```sudo nano  /etc/pulse/daemon.conf```  
 change default-sample-rate to 480000
 
-```pactl list sources```
+```pactl list sources```  
 probabaly looking for source #0 or something like this:  alsa_output.pci-0000_00_14.2.analog-stereo.monitor
 
-```sudo nano  record-pandora.conf```
-
-In line 1 put your source you got from the last step
-
-In line 2 put you minimum file size you would like to save (to prevent ads from being saved in kb - ie. 800)
-
-In line 3 put mp3 or ogg for the format you want saved
+```sudo nano  record-pandora.conf```  
+In line 1 put your source you got from the last step  
+In line 2 put you minimum file size you would like to save (to prevent ads from being saved in kb - ie. 800)  
+In line 3 put mp3 or ogg for the format you want saved  
 
 Optional, create a whitelist-artists.txt file with the names of the artists you only want to hear/record. Each line must be capitalized as pianobar shows them and the last line must have a blank line under it. Example:
 
@@ -41,6 +37,5 @@ Pink Floyd
 
 Optional, create a blacklist-artists.txt file with the names of the artists you dont want to hear/record. Each line must be capitalized as pianobar shows them and the last line must have a blank line under it.
 
-
+**Usage**  
 ```python recorder.py```
-
