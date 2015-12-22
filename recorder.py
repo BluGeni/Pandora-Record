@@ -16,7 +16,7 @@ import subprocess, time, os, sys
 # whitelist-artists.txt -- a list of artists to record, one per line, case sensitive, names must match Pandora name output exactly
 
 # blackist-artists.txt -- a list of artists to NOT record, one per line, case sensitive, names must match Pandora name output exactly
-dontDelete = False
+
 
 def startRecord(playingInfo1, playingInfo2, playingInfo3):
 
@@ -27,24 +27,24 @@ def startRecord(playingInfo1, playingInfo2, playingInfo3):
         #playingInfo3 = playingInfo3.replace("/", "-")
         #above moved
         global dontDelete
-        if(not os.path.exists("Music/" + playingInfo1)):
-            os.mkdir("Music/" + playingInfo1)
+        if(not os.path.exists(folderName + "/" + playingInfo1)):
+            os.mkdir(folderName + "/" + playingInfo1)
             print "Created new artist dir"
             
         #create new Album dir if not already there
-        if(not os.path.exists("Music/" + playingInfo1 + "/" + playingInfo2)):
-            os.mkdir("Music/" + playingInfo1 + "/" + playingInfo2)
+        if(not os.path.exists(folderName + "/" + playingInfo1 + "/" + playingInfo2)):
+            os.mkdir(folderName + "/" + playingInfo1 + "/" + playingInfo2)
             print "Created new album dir"
             
         #record new song if not already recorded
-        if(not os.path.exists("Music/" + playingInfo1 + "/" + playingInfo2 + "/" + playingInfo3 + "." + outputType)):
+        if(not os.path.exists(folderName + "/" + playingInfo1 + "/" + playingInfo2 + "/" + playingInfo3 + "." + outputType)):
             try: ### the next line is for specific sound card, edit it
                 
                 if(outputType == "" or outputType == "ogg"):
-                    os.system('avconv -loglevel panic -f pulse -i ' + audioDevName + ' -acodec libvorbis -ac 2 -vn "Music/' + playingInfo1 + '/' + playingInfo2 + '/' + playingInfo3 + '.ogg" &')
+                    os.system('avconv -loglevel panic -f pulse -i ' + audioDevName + ' -acodec libvorbis -ac 2 -vn "'folderName + '/' + playingInfo1 + '/' + playingInfo2 + '/' + playingInfo3 + '.ogg" &')
                 elif (outputType == "mp3"):
                     # -aq 0 >= 320kbps, -aq 2 >= 166kbps -aq 3 >= 118kbps -aq 5 >= 96kbps
-                    os.system('avconv -loglevel panic -f pulse -i ' + audioDevName + ' -acodec libmp3lame -aq 3 -ac 2 -vn "Music/' + playingInfo1 + '/' + playingInfo2 + '/' + playingInfo3 + '.mp3" &')
+                    os.system('avconv -loglevel panic -f pulse -i ' + audioDevName + ' -acodec libmp3lame -aq 3 -ac 2 -vn "'folderName + '/' + playingInfo1 + '/' + playingInfo2 + '/' + playingInfo3 + '.mp3" &')
 
                 print "Created new song file, now recording...\n"
                 dontDelete = False
@@ -61,10 +61,9 @@ def startRecord(playingInfo1, playingInfo2, playingInfo3):
 
 #variables and lists
 p2 = ""
+dontDelete = False
 
-#create music dir if it doesn't exist
-if(not os.path.exists("Music")):
-    os.mkdir("Music")
+
     
 #read configuration file
 try:
@@ -77,16 +76,21 @@ try:
         delFileSize = delFileSize.rstrip("\n")
         outputType = confFile.readline()
         outputType = outputType.rstrip("\n")
+        folderName = confFile.readline()
+        folderName = folderName.rstrip("\n")        
         confFile.close()
         if(outputType == ""):
 		outputType = "ogg"
 	elif(outputType != "ogg" and outputType != "mp3"):
 		outputType = "ogg"
 	print "Recording format: " + outputType + "\n"
+    #create music dir if it doesn't exist
+    if(not os.path.exists(folderName)):
+        os.mkdir(folderName)
     else:
         print "record-pandora.conf not found, please create it\nwith your audio device name and desired delete file size in bytes.\n"
-        print "Example 1:\nalsa_output.pci-0000_00_14.2.analog-stereo.monitor\n800\nogg\n"
-        print "Example 2:\nalsa_output.pci-0000_00_14.2.analog-stereo.monitor\n800\nmp3\n"
+        print "Example 1:\nalsa_output.pci-0000_00_14.2.analog-stereo.monitor\n800\nogg\nMusic\n"
+        print "Example 2:\nalsa_output.pci-0000_00_14.2.analog-stereo.monitor\n800\nmp3\nTechno\n"
 except:
     print "Error trying to read conf file"
 
@@ -137,9 +141,9 @@ while(True):
         try:
             #kill recording of last song
             os.system("killall avconv")
-            if(os.path.getsize("Music/" + playingInfo1 + "/" + playingInfo2 + "/" + playingInfo3 + "." + outputType) <= int(delFileSize)):
-                os.remove("Music/" + playingInfo1 + "/" + playingInfo2 + "/" + playingInfo3 + "." + outputType)
-                print "Removed file - too small: Music/" + playingInfo1 + "/" + playingInfo2 + "/" + playingInfo3 + "." + outputType
+            if(os.path.getsize(folderName + "/" + playingInfo1 + "/" + playingInfo2 + "/" + playingInfo3 + "." + outputType) <= int(delFileSize)):
+                os.remove(folderName + "/" + playingInfo1 + "/" + playingInfo2 + "/" + playingInfo3 + "." + outputType)
+                print "Removed file - too small: " + folderName +  "/" + playingInfo1 + "/" + playingInfo2 + "/" + playingInfo3 + "." + outputType
         except:
             print "Exception, avconv is not running - this is usually ok\n"
         try:
@@ -176,13 +180,13 @@ while(True):
         
         if dontDelete == False:
             print('Removing current recording song')
-            os.remove("Music/" + playingInfo1 + "/" + playingInfo2 + "/" + playingInfo3 + "." + outputType)
+            os.remove(folderName + "/" + playingInfo1 + "/" + playingInfo2 + "/" + playingInfo3 + "." + outputType)
             #check if album folder is empty now and delete if so
-            if not os.listdir(os.getcwd() + "/" + "Music/" + playingInfo1 + "/" + playingInfo2):
-                os.rmdir(os.getcwd() + "/" + "Music/" + playingInfo1 + "/" + playingInfo2)
+            if not os.listdir(os.getcwd() + "/" + folderName + "/" + playingInfo1 + "/" + playingInfo2):
+                os.rmdir(os.getcwd() + "/" + folderName + "/" + playingInfo1 + "/" + playingInfo2)
                 print "Removed empty album folder"
-            if not os.listdir(os.getcwd() + "/" + "Music/" + playingInfo1):
-                os.rmdir(os.getcwd() + "/" + "Music/" + playingInfo1)
+            if not os.listdir(os.getcwd() + "/" + folderName + "/" + playingInfo1):
+                os.rmdir(os.getcwd() + "/" + folderName + "/" + playingInfo1)
                 print "Removed empty artist folder"
         print('Exiting...')
         sys.exit(-1)
