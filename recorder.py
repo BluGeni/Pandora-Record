@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import subprocess, time, os
+import subprocess, time, os, sys
 
 # Requires Pulse audio to be in use
 
@@ -16,16 +16,17 @@ import subprocess, time, os
 # whitelist-artists.txt -- a list of artists to record, one per line, case sensitive, names must match Pandora name output exactly
 
 # blackist-artists.txt -- a list of artists to NOT record, one per line, case sensitive, names must match Pandora name output exactly
-
+dontDelete = False
 
 def startRecord(playingInfo1, playingInfo2, playingInfo3):
 
     try: #try to create new artist dir if not already there
         #remove illegal character / for file/folder names
-        playingInfo1 = playingInfo1.replace("/", "-")
-        playingInfo2 = playingInfo2.replace("/", "-")
-        playingInfo3 = playingInfo3.replace("/", "-")
-
+        #playingInfo1 = playingInfo1.replace("/", "-")
+        #playingInfo2 = playingInfo2.replace("/", "-")
+        #playingInfo3 = playingInfo3.replace("/", "-")
+        #above moved
+        global dontDelete
         if(not os.path.exists("Music/" + playingInfo1)):
             os.mkdir("Music/" + playingInfo1)
             print "Created new artist dir"
@@ -46,8 +47,11 @@ def startRecord(playingInfo1, playingInfo2, playingInfo3):
                     os.system('avconv -loglevel panic -f pulse -i ' + audioDevName + ' -acodec libmp3lame -aq 3 -ac 2 -vn "Music/' + playingInfo1 + '/' + playingInfo2 + '/' + playingInfo3 + '.mp3" &')
 
                 print "Created new song file, now recording...\n"
+                dontDelete = False
             except:
                 print "Error opening avconv! Is libav-tools installed?\n"
+        else:
+            dontDelete = True
     except:
         print "******************Couldn't create new song file!*******************\n"
         e = sys.exc_info()[0]
@@ -154,6 +158,10 @@ while(True):
             if(blackList and playingInfo1 + "\n" in blackList):
                 print "Skipping blacklisted artist: " + playingInfo1 + "\n"
             elif(playingInfo1 + "\n" in whiteList or whiteList == ""):
+                    #remove illegal character / for file/folder names and remove extra spaces
+                    playingInfo1 = playingInfo1.replace("/", "-").replae("&", "and").strip()
+                    playingInfo2 = playingInfo2.replace("/", "-").replae("&", "and").strip()
+                    playingInfo3 = playingInfo3.replace("/", "-").replae("&", "and").strip()
                     print "\nArtist: " + playingInfo1 + "\nAlbum: " + playingInfo2 + "\nSong: " + playingInfo3 + "\n"
                     #start dir check or creation and record to file
                     startRecord(playingInfo1, playingInfo2, playingInfo3)
@@ -161,4 +169,21 @@ while(True):
                 print "Not recording\nArtist: " + playingInfo1 + "\nAlbum: " + playingInfo2 + "\nSong: " + playingInfo3 + "\n(Not in whitelist)\n"
         except:
             print "Something went wrong with cleaning up pianobar output...\n"
-    output = p.stdout.readline()
+    try:
+        output = p.stdout.readline()
+    except (KeyboardInterrupt, SystemExit):
+        print('\nProgram shutting down...')
+        
+        if dontDelete == False:
+            print('Removing current recording song')
+            os.remove("Music/" + playingInfo1 + "/" + playingInfo2 + "/" + playingInfo3 + "." + outputType)
+            #check if album folder is empty now and delete if so
+            if not os.listdir(os.getcwd() + "/" + "Music/" + playingInfo1 + "/" + playingInfo2):
+                os.rmdir(os.getcwd() + "/" + "Music/" + playingInfo1 + "/" + playingInfo2)
+                print "Removed empty album folder"
+            if not os.listdir(os.getcwd() + "/" + "Music/" + playingInfo1):
+                os.rmdir(os.getcwd() + "/" + "Music/" + playingInfo1)
+                print "Removed empty artist folder"
+        print('Exiting...')
+        sys.exit(-1)
+        raise
