@@ -41,10 +41,10 @@ def startRecord(playingInfo1, playingInfo2, playingInfo3):
             try: ### the next line is for specific sound card, edit it
                 
                 if(outputType == "" or outputType == "ogg"):
-                    os.system('avconv -loglevel panic -f pulse -i ' + audioDevName + ' -acodec libvorbis -ac 2 -vn "'folderName + '/' + playingInfo1 + '/' + playingInfo2 + '/' + playingInfo3 + '.ogg" &')
+                    os.system('avconv -loglevel panic -f pulse -i ' + audioDevName + ' -acodec libvorbis -ac 2 -vn "' + folderName + '/' + playingInfo1 + '/' + playingInfo2 + '/' + playingInfo3 + '.ogg" &')
                 elif (outputType == "mp3"):
                     # -aq 0 >= 320kbps, -aq 2 >= 166kbps -aq 3 >= 118kbps -aq 5 >= 96kbps
-                    os.system('avconv -loglevel panic -f pulse -i ' + audioDevName + ' -acodec libmp3lame -aq 3 -ac 2 -vn "'folderName + '/' + playingInfo1 + '/' + playingInfo2 + '/' + playingInfo3 + '.mp3" &')
+                    os.system('avconv -loglevel panic -f pulse -i ' + audioDevName + ' -acodec libmp3lame -aq 3 -ac 2 -vn "' + folderName + '/' + playingInfo1 + '/' + playingInfo2 + '/' + playingInfo3 + '.mp3" &')
 
                 print "Created new song file, now recording...\n"
                 dontDelete = False
@@ -85,8 +85,9 @@ try:
 		outputType = "ogg"
 	print "Recording format: " + outputType + "\n"
     #create music dir if it doesn't exist
-    if(not os.path.exists(folderName)):
-        os.mkdir(folderName)
+        if(not os.path.exists(folderName)):
+            os.mkdir(folderName)
+            print "Making folder " + folderName
     else:
         print "record-pandora.conf not found, please create it\nwith your audio device name and desired delete file size in bytes.\n"
         print "Example 1:\nalsa_output.pci-0000_00_14.2.analog-stereo.monitor\n800\nogg\nMusic\n"
@@ -163,9 +164,9 @@ while(True):
                 print "Skipping blacklisted artist: " + playingInfo1 + "\n"
             elif(playingInfo1 + "\n" in whiteList or whiteList == ""):
                     #remove illegal character / for file/folder names and remove extra spaces
-                    playingInfo1 = playingInfo1.replace("/", "-").replae("&", "and").strip()
-                    playingInfo2 = playingInfo2.replace("/", "-").replae("&", "and").strip()
-                    playingInfo3 = playingInfo3.replace("/", "-").replae("&", "and").strip()
+                    playingInfo1 = playingInfo1.replace("/", "-").replace("&", "and").strip()
+                    playingInfo2 = playingInfo2.replace("/", "-").replace("&", "and").strip()
+                    playingInfo3 = playingInfo3.replace("/", "-").replace("&", "and").strip()
                     print "\nArtist: " + playingInfo1 + "\nAlbum: " + playingInfo2 + "\nSong: " + playingInfo3 + "\n"
                     #start dir check or creation and record to file
                     startRecord(playingInfo1, playingInfo2, playingInfo3)
