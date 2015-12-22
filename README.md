@@ -14,7 +14,8 @@ To setup pianobar after installing:
 
 ```mkdir ~/.config/pianobar```  
 ```sudo nano ~/.config/pianobar/config``` - see example config file  
-You will need to add your email and password for pandora
+You will need to add your email and password for pandora   
+You will also need to run pianobar once from the command line and choose a starting station, then set the long string of numbers you get for the station in the autostart_station of the pianobar config
 
 ```sudo nano  /etc/pulse/daemon.conf```  
 change default-sample-rate to 480000
