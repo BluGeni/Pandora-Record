@@ -41,10 +41,11 @@ def startRecord(playingInfo1, playingInfo2, playingInfo3):
             try: ### the next line is for specific sound card, edit it
                 
                 if(outputType == "" or outputType == "ogg"):
-                    os.system('avconv -loglevel panic -f pulse -i ' + audioDevName + ' -acodec libvorbis -ac 2 -vn "' + folderName + '/' + playingInfo1 + '/' + playingInfo2 + '/' + playingInfo3 + '.ogg" &')
+                    os.system('avconv -loglevel panic -f pulse -i ' + audioDevName + ' -acodec libvorbis -ac 2 -metadata artist="' + playingInfo1 + '" -metadata album="' + playingInfo2 + '" -metadata title="' + playingInfo3 + '" -vn "' + folderName + '/' + playingInfo1 + '/' + playingInfo2 + '/' + playingInfo3 + '.ogg" &')
+
                 elif (outputType == "mp3"):
                     # -aq 0 >= 320kbps, -aq 2 >= 166kbps -aq 3 >= 118kbps -aq 5 >= 96kbps
-                    os.system('avconv -loglevel panic -f pulse -i ' + audioDevName + ' -acodec libmp3lame -aq 3 -ac 2 -vn "' + folderName + '/' + playingInfo1 + '/' + playingInfo2 + '/' + playingInfo3 + '.mp3" &')
+                    os.system('avconv -loglevel panic -f pulse -i ' + audioDevName + ' -acodec libmp3lame -aq 3 -ac 2 -metadata artist="' + playingInfo1 + '" -metadata album="' + playingInfo2 + '" -metadata title="' + playingInfo3 + '" -vn "' + folderName + '/' + playingInfo1 + '/' + playingInfo2 + '/' + playingInfo3 + '.mp3" &')
 
                 print "Created new song file, now recording...\n"
                 dontDelete = False
