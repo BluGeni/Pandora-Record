@@ -39,4 +39,4 @@ Pink Floyd
 Optional, create a blacklist-artists.txt file with the names of the artists you dont want to hear/record. Each line must be capitalized as pianobar shows them and the last line must have a blank line under it.
 
 **Usage**  
-```python recorder.py```
+```python pandora-record```
